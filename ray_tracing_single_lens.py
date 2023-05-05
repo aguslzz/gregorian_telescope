@@ -14,6 +14,7 @@ Modified on Tuesday April 19 11:01:54 2023
 import numpy as np
 import math 
 from PIL import Image
+from  scipy.ndimage import gaussian_filter
 
 from scipy.interpolate import griddata
 
@@ -69,7 +70,7 @@ def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
     
     # Compute lens matrix using parameters nl, R1, R2, and dl
     #A = compute_lens_matrix(nl, R1, R2, dl)
-    A = np.array([[-28.89, -5.52], [-2391, -457.4]])
+    A = np.array([[-4.73726112, 93.32234569], [-0.14107753, 2.56808423]])
 
     # Define propagation matrices after and before the lens
     P2 = np.array([[1,0],[si/n1,1]])
@@ -159,7 +160,7 @@ res = 0.0001 #each pixel equals 0.1 mm
 
 #load image (Object!)
 #obj = Image.open("saturn.jpg", "r")
-obj = Image.open('eiffel.jpg', 'r')
+obj = Image.open('saturn.jpg', 'r')
 width, height = obj.size
 
 width_output = int(width*(abs(Mt)))
@@ -170,11 +171,13 @@ image = Image.new("RGB", (width_output, height_output), "white")
 pixels = image.load()
 
 #Compute the image with chief ray
-pixels = ray_tracing(width, height, 0, so, n1, si, obj, res, pixels)
+pixels = ray_tracing(width, height, 0, so, n1, so, obj, res, pixels)
 
 #Compute the cummulated image with parallel ray
-pixels = ray_tracing(width, height, 1, so, n1, si, obj, res, pixels)
+pixels = ray_tracing(width, height, 1, so, n1, so, obj, res, pixels)
 
+
+print("before interpolation")
 #Interpolate if necesarry
 if (np.abs(Mt) > 1.0):
   pixels = interpolation(pixels)
@@ -182,5 +185,5 @@ if (np.abs(Mt) > 1.0):
   pass
 
 #Save Images to File
-image.save('eiffel_output.jpg', format='PNG')
+image.save('saturn_output.png', format='PNG')
 print("finished")

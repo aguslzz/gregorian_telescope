@@ -1,18 +1,12 @@
-#Gregorian catadioptric telescope implementation in Python using matricial (ABCD) raytracing. 
+#Gregorian catadioptric telescope implementation in Python using matricial (ABCD) raytracing.
 #The design of the optical system is described in the pdf Gregorian-Telescope1.
 #Firstly, the telescope is compoun by one primary mirror (Concave-Paraboloid) and a secondary mirror (Concave-Ellipsoid)
 #a field lens (Bi-concave) and an eye lens (Bi-concave) represent the final phase of the image formation.
-
-"""
-Created on Thu May 23 14:30 2023
-@authors: Agustín López (alopezz1), Dayana Carmona and Ana Isabel Osorio. Universidad EAFIT, Physics Engineering.
-"""
 
 
 import numpy as np
 from ray_tracing_single_lens import *
 from functions import *
-#from  scipy.ndimage import gaussian_filter
 
 #Define the optical system parameters
 #Optical elements
@@ -45,51 +39,18 @@ T2 = optical_matrixes_generator(2, t1)              #Primary Mirror - Secondary 
 T1 = T2                                             #Aperture - Primary Mirror distance matrix
 #System matrix
 S = (T6.dot(LO.dot(T5.dot(LE.dot(T4.dot(LF.dot(T3.dot(Ms.dot(T2.dot(Mp.dot(T1)))))))))))
-print("System matrix", S)
-
-#COMPUTING DATA FOR ANALYTICAL RAY TRACING
-#Object distance
-so = 0.11
-
-n1 = 1 #Air index of refraction 
-
-#Magnification
-Mt = -si/so
-Mt = 1
-print ("Mt: ", Mt)
-
-#Pixel size to real world size conversion
-res = 0.0001 #each pixel equals 0.1 mm
-
-#load image (Object!)
-#obj = Image.open("saturn.jpg", "r")
-obj = Image.open('eiffel.jpg', 'r')
-width, height = obj.size
-
-width_output = int(width*(abs(Mt)))
-height_output = int(height*(abs(Mt)))
-
-# Create new Image and a Pixel Map
-image = Image.new("RGB", (width_output, height_output), "white")
-pixels = image.load()
-
-#Compute the image with chief ray
-pixels = ray_tracing(width, height, 0, n1, so, obj, res, pixels, S, width_output, height_output)
-
-#Compute the cummulated image with parallel ray
-pixels = ray_tracing(width, height, 1, n1, so, obj, res, pixels, S, width_output, height_output)
-
-print("this is before interpolation")
-#Interpolate if necesarry
-if (np.abs(Mt) > 1.0):
-  pixels = interpolation(pixels)
-  print ("Interpolation performed")
-  pass
-else: print("no interpolation")
-
-#Save Images to File
-output_name = "eiffel_output.png"
-image.save(output_name, format='PNG')
-print("image saved as" , output_name )
-
-
+print(S)
+#Mirrors matrixes 
+#Mp = np.matrix([[-1, -2/Rp], [0, 1]])           #Primary mirror matrix (reflection)
+#Ms = np.matrix([[-1, -2/Rs], [0, 1]])           #Secondary mirror matrix (reflection)
+#lens matrixes
+#LF = np.matrix([[1, -1/fF], [0, 1]])            #Field lens matrix (refraction)
+#LE = np.matrix([[1, -1/fE], [0, 1]])            #Eye lens matrix (refraction)
+#LO = np.matrix([[1, -1/fO], [0, 1]])            #Image formation convergent lens matrix (refraction)
+#Traslation matrixes
+#T6 = np.matrix([[1, 0], [di, 1]])               #Image formation distance matrix (traslation)
+#T5 = np.matrix([[1, 0], [ER, 1]])               #Eye relief distance matrix (traslation)
+#T4 = np.matrix([[1, 0], [t3, 1]])               #Eye relief distance matrix (traslation)
+#T3 = np.matrix([[1, 0], [t2, 1]])               #Eye relief distance matrix (traslation)
+#T2 = np.matrix([[1, 0], [t1, 1]])               #Eye relief distance matrix (traslation)
+#T1 = T2

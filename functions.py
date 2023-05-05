@@ -58,14 +58,7 @@ def compute_lens_matrix(nl, R1, R2, dl):
     return A
 
 #Ray tracing function
-def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
-
-    # Compute lens matrix using parameters nl, R1, R2, and dl
-    A = np.array([[1, 0], [-1/0.3, 1]])
-
-    # Define propagation matrices after and before the lens
-    P2 = np.array([[1,0],[si/n1,1]])
-    P1 = np.array([[1,0],[-so/n1,1]])
+def ray_tracing(width, height, rayo, n1, so, obj, res, pixels, transfmatrix, width_o, height_o):
     
     # Iterate over each pixel of the image
     for i in range(width):
@@ -90,25 +83,26 @@ def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
             V_entrada = np.array([n1*alpha_entrada,y_objeto]) 
         
             #Output ray vector calculation
-            V_salida = P2.dot(A.dot(P1.dot(V_entrada)))
+            V_salida = transfmatrix.dot(V_entrada)
         
             #Transversal magnification
             y_imagen = V_salida[1]
             if rayo == 0: #principal
                 Mt = (-1)*y_imagen/y_objeto #atan correction
             elif rayo == 1: #parallel
-                Mt = y_imagen/y_objeto                
+                Mt = y_imagen/y_objeto
+                            
 
             #Conversion from image coordinates to lens coordinates        
             x_prime = Mt*x
             y_prime = Mt*y
-            pos_x_prime = int(x_prime + width_output/2)
-            pos_y_prime = int(y_prime + height_output/2)
+            pos_x_prime = int(x_prime + width_o/2)
+            pos_y_prime = int(y_prime + height_o/2)
             
-            if  pos_x_prime < 0 or pos_x_prime >= width_output:
+            if  pos_x_prime < 0 or pos_x_prime >= width_o:
             	continue
             	
-            if  pos_y_prime < 0 or pos_y_prime >= height_output:
+            if  pos_y_prime < 0 or pos_y_prime >= height_o:
             	continue
                      
             if rayo == 0: #principal   
@@ -129,7 +123,7 @@ def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
 def optical_matrixes_generator(type, value):
 #Mirrors matrix
     if type == 0:
-        return np.array([[1, 0], [-2/value, 1]])
+        return np.array([[1, 0], [2/value, 1]])
 #Lens matrix
     elif type == 1:
         return np.array([[1, 0], [-1/value, 1]])
