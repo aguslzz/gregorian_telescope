@@ -22,7 +22,7 @@ fF = 26.45          #Focal length of the field lens (mm)
 fE = 10.21          #Focal length of the eye lens (mm)
 fO = 18.78          #Focal length of the ocular eye lens (mm)
 #Distance between optical elements
-ER = 10.74          #Eye relief (distance between the eye lens to the tip of your eye) (mm)
+ER = 10.74          #Eye relief (distance between the eyepiece and the eye lens) (mm)
 t1 = 68.24          #Spacing between primary and secondary mirror (mm)
 t2 = 83.79          #Spacing between secondary mirror and field lens (mm)
 t3 = 16.21          #Spacing between field lens and eyepiece lens (mm)
@@ -45,25 +45,27 @@ T2 = optical_matrixes_generator(2, t1)              #Primary Mirror - Secondary 
 T1 = T2                                             #Aperture - Primary Mirror distance matrix
 #System matrix
 S = (T6.dot(LO.dot(T5.dot(LE.dot(T4.dot(LF.dot(T3.dot(Ms.dot(T2.dot(Mp.dot(T1)))))))))))
+#S = np.array([[-3.79e-2, -3.93e1], [-7.60e-2, -5.24e1]])
 print("System matrix", S)
 
 #COMPUTING DATA FOR ANALYTICAL RAY TRACING
-#Object distance
-so = 0.11
+#Object distance (in meters)
+so = 0.0012
+#Image distance (in meters)
+si = 0.003
 
 n1 = 1 #Air index of refraction 
 
 #Magnification
-Mt = -si/so
-Mt = 1
+Mt = si /so
+Mt = 1.1
 print ("Mt: ", Mt)
 
 #Pixel size to real world size conversion
 res = 0.0001 #each pixel equals 0.1 mm
 
 #load image (Object!)
-#obj = Image.open("saturn.jpg", "r")
-obj = Image.open('arrow_8.JPG', 'r')
+obj = Image.open('landscape.jpg', 'r')
 width, height = obj.size
 
 width_output = int(width*(abs(Mt)))
@@ -88,7 +90,7 @@ if (np.abs(Mt) > 1.0):
 else: print("no interpolation")
 
 #Save Images to File
-output_name = "arrow8_output.png"
+output_name = "landscape_output.png"
 image.save(output_name, format='PNG')
 print("image saved as" , output_name )
 

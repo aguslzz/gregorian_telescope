@@ -151,7 +151,6 @@ n1 = 1 #Air index of refraction
 
 #Magnification
 Mt = -si/so
-Mt = 1
 print ("Mt: ", Mt)
 
 #Pixel size to real world size conversion
