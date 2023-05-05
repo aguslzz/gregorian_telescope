@@ -14,7 +14,6 @@ Modified on Tuesday April 19 11:01:54 2023
 import numpy as np
 import math 
 from PIL import Image
-from  scipy.ndimage import gaussian_filter
 
 from scipy.interpolate import griddata
 

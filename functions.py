@@ -11,11 +11,11 @@ from scipy import interpolate
 ## Carlos´ functions
 
 #Interpolation functions within white or non-white pixels
-def interpolation (pixels):
+def interpolation (pixels, width_o, height_o):
 
-  arry = np.zeros((width_output, height_output))
-  for i in range(width_output):
-    for j in range(height_output):
+  arry = np.zeros((width_o, height_o))
+  for i in range(width_o):
+    for j in range(height_o):
       arry[i,j] = pixels[i,j][0]
 
   # Get the coordinates of the non-white pixels

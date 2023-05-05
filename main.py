@@ -63,7 +63,7 @@ res = 0.0001 #each pixel equals 0.1 mm
 
 #load image (Object!)
 #obj = Image.open("saturn.jpg", "r")
-obj = Image.open('eiffel.jpg', 'r')
+obj = Image.open('arrow_8.JPG', 'r')
 width, height = obj.size
 
 width_output = int(width*(abs(Mt)))
@@ -82,13 +82,13 @@ pixels = ray_tracing(width, height, 1, n1, so, obj, res, pixels, S, width_output
 print("this is before interpolation")
 #Interpolate if necesarry
 if (np.abs(Mt) > 1.0):
-  pixels = interpolation(pixels)
+  pixels = interpolation(pixels, width_output, height_output)
   print ("Interpolation performed")
   pass
 else: print("no interpolation")
 
 #Save Images to File
-output_name = "eiffel_output.png"
+output_name = "arrow8_output.png"
 image.save(output_name, format='PNG')
 print("image saved as" , output_name )
 
