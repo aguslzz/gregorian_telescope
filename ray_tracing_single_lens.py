@@ -68,7 +68,8 @@ def compute_lens_matrix(nl, R1, R2, dl):
 def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
     
     # Compute lens matrix using parameters nl, R1, R2, and dl
-    A = compute_lens_matrix(nl, R1, R2, dl)
+    #A = compute_lens_matrix(nl, R1, R2, dl)
+    A = np.array([[-28.89, -5.52], [-2391, -457.4]])
 
     # Define propagation matrices after and before the lens
     P2 = np.array([[1,0],[si/n1,1]])
@@ -95,9 +96,9 @@ def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
             elif rayo == 1: #parallel
                 alpha_entrada = 0 #This ray enters parallel to the optical axis
             V_entrada = np.array([n1*alpha_entrada,y_objeto]) 
-        
+
             #Output ray vector calculation
-            V_salida = P2.dot(A.dot(P1.dot(V_entrada)))
+            V_salida = A.dot(V_entrada)
         
             #Transversal magnification
             y_imagen = V_salida[1]
@@ -150,6 +151,7 @@ n1 = 1 #Air index of refraction
 
 #Magnification
 Mt = -si/so
+Mt = 1
 print ("Mt: ", Mt)
 
 #Pixel size to real world size conversion
@@ -157,7 +159,7 @@ res = 0.0001 #each pixel equals 0.1 mm
 
 #load image (Object!)
 #obj = Image.open("saturn.jpg", "r")
-obj = Image.open("saturn.jpg", "r")
+obj = Image.open('eiffel.jpg', 'r')
 width, height = obj.size
 
 width_output = int(width*(abs(Mt)))
@@ -175,9 +177,10 @@ pixels = ray_tracing(width, height, 1, so, n1, si, obj, res, pixels)
 
 #Interpolate if necesarry
 if (np.abs(Mt) > 1.0):
-  #pixels = interpolation(pixels)
+  pixels = interpolation(pixels)
   print ("Interpolation performed")
   pass
 
 #Save Images to File
-image.save('output.png', format='PNG')
+image.save('eiffel_output.jpg', format='PNG')
+print("finished")

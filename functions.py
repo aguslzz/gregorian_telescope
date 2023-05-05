@@ -61,7 +61,7 @@ def compute_lens_matrix(nl, R1, R2, dl):
 def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
 
     # Compute lens matrix using parameters nl, R1, R2, and dl
-    A = compute_lens_matrix(nl, R1, R2, dl)
+    A = np.array([[1, 0], [-1/0.3, 1]])
 
     # Define propagation matrices after and before the lens
     P2 = np.array([[1,0],[si/n1,1]])
@@ -123,16 +123,17 @@ def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
 
 ## My functions
 
-#Matrix formation function 
-def matrix_generator(type, value):
-   #Mirrors matrix
-   if type == 0:
-
-    #Lens matrix
-    if type == 1:
-       
-    #Traslation matrix
-    if type == 2:
-       
-
-      
+#Matrix formation function
+#[type] 0 for mirror, type = 1 for lens and 2 for traslation
+#[value] Radii for mirror, focal for lens and distance for traslation
+def optical_matrixes_generator(type, value):
+#Mirrors matrix
+    if type == 0:
+        return np.array([[1, 0], [-2/value, 1]])
+#Lens matrix
+    elif type == 1:
+        return np.array([[1, 0], [-1/value, 1]])
+#Traslation matrix
+    elif type == 2:
+        return np.array([[1, value], [0, 1]])
+    else: return np.array([[0, 0], [0, 0]])
