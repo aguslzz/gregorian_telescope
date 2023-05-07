@@ -1,13 +1,12 @@
 #Gregorian catadioptric telescope implementation in Python using matricial (ABCD) raytracing. 
 #The design of the optical system is described in the pdf Gregorian-Telescope1.
-#Firstly, the telescope is compoun by one primary mirror (Concave-Paraboloid) and a secondary mirror (Concave-Ellipsoid)
-#a field lens (Bi-concave) and an eye lens (Bi-concave) represent the final phase of the image formation.
+#Firstly, the telescope is compound by one primary mirror and a secondary mirror (Concave-Ellipsoid),
+#a field lens and an eye-piece(Bi-concave). A final eye-lens represents the final phase of the image formation.
 
 """
 Created on Thu May 23 14:30 2023
 @authors: Agustín López (alopezz1), Dayana Carmona and Ana Isabel Osorio. Universidad EAFIT, Physics Engineering.
 """
-
 
 import numpy as np
 from ray_tracing_single_lens import *
@@ -17,15 +16,15 @@ from functions import *
 #Define the optical system parameters
 #Optical elements
 Rp = 90             #Radius of the primary mirror (mm)
-Rs = 36.39          #Raidus of the secondary mirror (mm)
+Rs = 42             #Raddus of the secondary mirror (mm)
 fF = 26.45          #Focal length of the field lens (mm)
-fE = 10.21          #Focal length of the eye lens (mm)
+fE = 10.21          #Focal length of the eyepiece (mm)
 fO = 18.78          #Focal length of the ocular eye lens (mm)
 #Distance between optical elements
 ER = 10.74          #Eye relief (distance between the eyepiece and the eye lens) (mm)
 t1 = 68.24          #Spacing between primary and secondary mirror (mm)
-t2 = 83.79          #Spacing between secondary mirror and field lens (mm)
-t3 = 16.21          #Spacing between field lens and eyepiece lens (mm)
+t2 = 100            #Spacing between secondary mirror and field lens (mm)
+t3 = fE             #Spacing between field lens and eyepiece lens (mm)
 di = fO             #Image forming distance (mm)
 
 #Optical matrixes generation
@@ -50,23 +49,24 @@ print("System matrix", S)
 
 #COMPUTING DATA FOR ANALYTICAL RAY TRACING
 #Object distance (in meters)
-so = 0.0012
+so = 0.00015
 #Image distance (in meters)
 si = 0.003
 
-n1 = 1 #Air index of refraction 
-
-#Magnification
-Mt = si /so
-Mt = 1.1
-print ("Mt: ", Mt)
+n1 = 1 #Air index of refraction
 
 #Pixel size to real world size conversion
 res = 0.0001 #each pixel equals 0.1 mm
 
 #load image (Object!)
-obj = Image.open('landscape.jpg', 'r')
+input_name = "eiffel.jpg"
+obj = Image.open(input_name, 'r')
+print("processing" , input_name )
 width, height = obj.size
+
+#Magnification
+Mt = get_magnification(width, height, 0, n1, so, res, S)
+print("magnificationnn", Mt)
 
 width_output = int(width*(abs(Mt)))
 height_output = int(height*(abs(Mt)))
@@ -78,19 +78,19 @@ pixels = image.load()
 #Compute the image with chief ray
 pixels = ray_tracing(width, height, 0, n1, so, obj, res, pixels, S, width_output, height_output)
 
-#Compute the cummulated image with parallel ray
+#Compute the acummulated image with parallel ray
 pixels = ray_tracing(width, height, 1, n1, so, obj, res, pixels, S, width_output, height_output)
 
-print("this is before interpolation")
 #Interpolate if necesarry
-if (np.abs(Mt) > 1.0):
+interpolate = True
+if interpolate:
   pixels = interpolation(pixels, width_output, height_output)
   print ("Interpolation performed")
   pass
 else: print("no interpolation")
 
 #Save Images to File
-output_name = "landscape_output.png"
+output_name = "eiffel_output.png"
 image.save(output_name, format='PNG')
 print("image saved as" , output_name )
 

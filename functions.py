@@ -101,10 +101,8 @@ def ray_tracing(width, height, rayo, n1, so, obj, res, pixels, transfmatrix, wid
             
             if  pos_x_prime < 0 or pos_x_prime >= width_o:
             	continue
-            	
             if  pos_y_prime < 0 or pos_y_prime >= height_o:
-            	continue
-                     
+            	continue 
             if rayo == 0: #principal   
                 pixels[pos_x_prime, pos_y_prime] = (int(pixel), int(pixel), int(pixel))
             elif rayo == 1: #parallel    
@@ -131,3 +129,36 @@ def optical_matrixes_generator(type, value):
     elif type == 2:
         return np.array([[1, value], [0, 1]])
     else: return np.array([[0, 0], [0, 0]])
+
+def get_magnification(width, height, rayo, n1, so, res, transfmatrix):
+    # Iterate over each pixel of the image
+    for i in range(width):
+        for j in range(height):
+            
+            # Get pixel value and calculate its position relative to the center of the image
+            pos_x = i
+            pos_y = j          
+            x = pos_x - width/2
+            y = pos_y - height/2
+            
+            # Calculate the distance from the particular pixel to the center of the object (in pixels)
+            r = math.sqrt( x*x + y*y ) + 1 #Rounding correction
+        
+            #Input ray vector (point in the object plane)
+            y_objeto = r*res # Conversion to real world coordinates
+            if rayo == 0: #principal
+                alpha_entrada = math.atan(y_objeto/so) #This ray enters towards the center of the lens
+            elif rayo == 1: #parallel
+                alpha_entrada = 0 #This ray enters parallel to the optical axis
+            V_entrada = np.array([n1*alpha_entrada,y_objeto]) 
+        
+            #Output ray vector calculation
+            V_salida = transfmatrix.dot(V_entrada)
+        
+            #Transversal magnification
+            y_imagen = V_salida[1]
+            if rayo == 0: #principal
+                Mt = (-1)*y_imagen/y_objeto #atan correction
+            elif rayo == 1: #parallel
+                Mt = y_imagen/y_objeto
+    return Mt

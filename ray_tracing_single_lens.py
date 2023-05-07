@@ -14,6 +14,7 @@ Modified on Tuesday April 19 11:01:54 2023
 import numpy as np
 import math 
 from PIL import Image
+from functions import *
 
 from scipy.interpolate import griddata
 
@@ -68,8 +69,7 @@ def compute_lens_matrix(nl, R1, R2, dl):
 def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
     
     # Compute lens matrix using parameters nl, R1, R2, and dl
-    #A = compute_lens_matrix(nl, R1, R2, dl)
-    A = np.array([[-4.73726112, 93.32234569], [-0.14107753, 2.56808423]])
+    A = compute_lens_matrix(nl, R1, R2, dl)
 
     # Define propagation matrices after and before the lens
     P2 = np.array([[1,0],[si/n1,1]])
@@ -98,7 +98,7 @@ def ray_tracing(width, height, rayo, so, n1, si, obj, res, pixels):
             V_entrada = np.array([n1*alpha_entrada,y_objeto]) 
 
             #Output ray vector calculation
-            V_salida = A.dot(V_entrada)
+            V_salida = P2.dot(A.dot(P1.dot(V_entrada)))
         
             #Transversal magnification
             y_imagen = V_salida[1]
@@ -144,7 +144,7 @@ so = 0.1
 
 #To guarantee conjugated planes
 si = (f*so)/(so-f)
-#si = 0.65
+si = 0.65
 print("si: ", si)
 
 n1 = 1 #Air index of refraction 
@@ -174,10 +174,9 @@ pixels = ray_tracing(width, height, 0, so, n1, so, obj, res, pixels)
 #Compute the cummulated image with parallel ray
 pixels = ray_tracing(width, height, 1, so, n1, so, obj, res, pixels)
 
-
-print("before interpolation")
 #Interpolate if necesarry
-if (np.abs(Mt) > 1.0):
+interpolate = True
+if interpolate:
   pixels = interpolation(pixels)
   print ("Interpolation performed")
   pass
@@ -185,3 +184,6 @@ if (np.abs(Mt) > 1.0):
 #Save Images to File
 image.save('saturn_output.png', format='PNG')
 print("finished")
+
+print("mag rayo principal", get_magnification(width, height, 0, nl, so, res, compute_lens_matrix(nl, R1, R2, dl)))
+print("mag rayo paralelo", get_magnification(width, height, 1, nl, so, res, compute_lens_matrix(nl, R1, R2, dl)))
