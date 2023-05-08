@@ -11,6 +11,7 @@ Created on Thu May 23 14:30 2023
 import numpy as np
 from ray_tracing_single_lens import *
 from functions import *
+from PIL import Image, ImageEnhance
 #from  scipy.ndimage import gaussian_filter
 
 #Define the optical system parameters
@@ -19,7 +20,7 @@ Rp = 90             #Radius of the primary mirror (mm)
 Rs = 42             #Raddus of the secondary mirror (mm)
 fF = 26.45          #Focal length of the field lens (mm)
 fE = 10.21          #Focal length of the eyepiece (mm)
-fO = 18.78          #Focal length of the ocular eye lens (mm)
+fO = 24             #Focal length of the ocular eye lens (mm)
 #Distance between optical elements
 ER = 10.74          #Eye relief (distance between the eyepiece and the eye lens) (mm)
 t1 = 68.24          #Spacing between primary and secondary mirror (mm)
@@ -50,6 +51,7 @@ print("System matrix", S)
 #COMPUTING DATA FOR ANALYTICAL RAY TRACING
 #Object distance (in meters)
 so = 0.00015
+
 #Image distance (in meters)
 si = 0.003
 
@@ -63,14 +65,18 @@ input_name = "eiffel.jpg"
 obj = Image.open(input_name, 'r')
 print("processing" , input_name )
 width, height = obj.size
+print("width", width, "height", height)
 
 #Magnification
 Mt = get_magnification(width, height, 0, n1, so, res, S)
-print("magnificationnn", Mt)
-
+print("transversal magnification(0)", Mt)
+Mt1 = get_magnification(width, height, 1, n1, so, res, S)
+print("transversal magnification(1)", Mt1)
+Mt2 = get_magnification(width, height, 2, n1, so, res, S)
+print("transversal magnification(2)", Mt2)
 width_output = int(width*(abs(Mt)))
 height_output = int(height*(abs(Mt)))
-
+print("width_o", width_output, "height_o", height_output)
 # Create new Image and a Pixel Map
 image = Image.new("RGB", (width_output, height_output), "white")
 pixels = image.load()
@@ -78,8 +84,12 @@ pixels = image.load()
 #Compute the image with chief ray
 pixels = ray_tracing(width, height, 0, n1, so, obj, res, pixels, S, width_output, height_output)
 
+#Compute the acummulated image with mid ray
+#pixels = ray_tracing(width, height, 2, n1, so, obj, res, pixels, S, width_output, height_output)
+
 #Compute the acummulated image with parallel ray
 pixels = ray_tracing(width, height, 1, n1, so, obj, res, pixels, S, width_output, height_output)
+
 
 #Interpolate if necesarry
 interpolate = True
@@ -89,9 +99,14 @@ if interpolate:
   pass
 else: print("no interpolation")
 
+
 #Save Images to File
 output_name = "eiffel_output.png"
 image.save(output_name, format='PNG')
-print("image saved as" , output_name )
+print("processed image saved as" , output_name )
+#ImageEnhance.Sharpness().enhance(2.0)
+#Image.show()
+#obj_crop = obj.crop((20, 20, 200, 200))
+#obj_crop.show()
 
 

@@ -136,7 +136,7 @@ nl = 1.5
 
 #Computing the lens' focal distance
 f = R1*R2/((R2-R1)*(nl-1))
-print("focal: ", f)
+#print("focal: ", f)
 
 #Propagation distances before and after the lens
 #Object distance
@@ -144,8 +144,7 @@ so = 0.1
 
 #To guarantee conjugated planes
 si = (f*so)/(so-f)
-si = 0.65
-print("si: ", si)
+#print("si: ", si)
 
 n1 = 1 #Air index of refraction 
 

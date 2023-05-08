@@ -80,8 +80,10 @@ def ray_tracing(width, height, rayo, n1, so, obj, res, pixels, transfmatrix, wid
                 alpha_entrada = math.atan(y_objeto/so) #This ray enters towards the center of the lens
             elif rayo == 1: #parallel
                 alpha_entrada = 0 #This ray enters parallel to the optical axis
-            V_entrada = np.array([n1*alpha_entrada,y_objeto]) 
-        
+            elif rayo == 2: #mid ray
+                alpha_entrada = (math.atan(y_objeto/so))/2 #This ray enters towards the center of the lens
+            V_entrada = np.array([n1*alpha_entrada,y_objeto])
+            
             #Output ray vector calculation
             V_salida = transfmatrix.dot(V_entrada)
         
@@ -91,8 +93,9 @@ def ray_tracing(width, height, rayo, n1, so, obj, res, pixels, transfmatrix, wid
                 Mt = (-1)*y_imagen/y_objeto #atan correction
             elif rayo == 1: #parallel
                 Mt = y_imagen/y_objeto
+            elif rayo == 2: #mid                                                  #CAMBIAR CUADRAR (REVISAR CON LÍNEA 83)
+                Mt = y_imagen/y_objeto
                             
-
             #Conversion from image coordinates to lens coordinates        
             x_prime = Mt*x
             y_prime = Mt*y
@@ -109,7 +112,10 @@ def ray_tracing(width, height, rayo, n1, so, obj, res, pixels, transfmatrix, wid
                 new_gray = (int(pixel) + pixels[pos_x_prime, pos_y_prime][0])/2
                 pix_fin = ( int(new_gray), int(new_gray), int(new_gray) )        
                 pixels[pos_x_prime, pos_y_prime] = pix_fin
-
+            elif rayo == 2: #mid ray
+                new_gray = (int(pixel) + pixels[pos_x_prime, pos_y_prime][0])/2
+                pix_fin = (int(new_gray), int(new_gray), int(new_gray) )        
+                pixels[pos_x_prime, pos_y_prime] = pix_fin
     return pixels
 
 
@@ -150,6 +156,8 @@ def get_magnification(width, height, rayo, n1, so, res, transfmatrix):
                 alpha_entrada = math.atan(y_objeto/so) #This ray enters towards the center of the lens
             elif rayo == 1: #parallel
                 alpha_entrada = 0 #This ray enters parallel to the optical axis
+            elif rayo == 2: #principal
+                alpha_entrada = (math.atan(y_objeto/so))/2 #This ray enters towards the center of the lens
             V_entrada = np.array([n1*alpha_entrada,y_objeto]) 
         
             #Output ray vector calculation
@@ -160,5 +168,7 @@ def get_magnification(width, height, rayo, n1, so, res, transfmatrix):
             if rayo == 0: #principal
                 Mt = (-1)*y_imagen/y_objeto #atan correction
             elif rayo == 1: #parallel
+                Mt = y_imagen/y_objeto
+            elif rayo == 2: #mid ray
                 Mt = y_imagen/y_objeto
     return Mt
