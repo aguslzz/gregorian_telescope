@@ -13,14 +13,10 @@ img3 = Image.open('moon.png') #Read original image2
 img4 = Image.open('moon_output.png')  #Read image2 processed (magnified)
 
 #Obtain metadata of the images
-h1 = img1.height 
-w1 = img1.width
-h2 = img2.height
-w2 = img2.width
-h3 = img3.height
-w3 = img3.width
-h4 = img4.height
-w4 = img4.width
+w1, h1 = img1.size 
+w2, h2 = img2.size
+w3, h3 = img3.size
+w4, h4 = img4.size
 
 #Verifying magnification of the original image
 height_magnification1 = (h2/h1)
@@ -42,11 +38,11 @@ rows = 1
 columns = 2
 fig1.add_subplot(rows, columns, 1)
 plt.imshow(img1, cmap='gray')
-plt.axis('off')
+plt.axis('on')
 plt.title("Original Image")
 fig1.add_subplot(rows, columns, 2)
 plt.imshow(img2)
-plt.axis('off')
+plt.axis('on')
 plt.title("Processed Image" )
 plt.show()
 
@@ -55,10 +51,10 @@ rows = 1
 columns = 2
 fig2.add_subplot(rows, columns, 1)
 plt.imshow(img3, cmap='gray')
-plt.axis('off')
+plt.axis('on')
 plt.title("Original Image")
 fig2.add_subplot(rows, columns, 2)
 plt.imshow(img4)
-plt.axis('off')
+plt.axis('on')
 plt.title("Processed Image" )
 plt.show()
