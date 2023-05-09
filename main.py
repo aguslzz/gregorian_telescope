@@ -55,7 +55,7 @@ n1 = 1 #Air index of refraction
 res = 96870000
 
 #load image (Object!)
-input_name = "moon.png"
+input_name = "eiffel.jpg"
 obj = Image.open(input_name, 'r')
 print("processing" , input_name )
 width, height = obj.size
@@ -93,7 +93,7 @@ if interpolate:
 else: print("no interpolation")
 
 #Save Images to File
-output_name = "moon_output.png"
+output_name = "eiffel_output.png"
 image.save(output_name, format='PNG')
 print("processed image saved as" , output_name )
 #ImageEnhance.Sharpness().enhance(2.0)
