@@ -1,7 +1,7 @@
 from skimage.metrics import structural_similarity
 import cv2
 from matplotlib import pyplot as plt
-import numpy
+import numpy as np
 from PIL import Image
 from PIL.ExifTags import TAGS
 
@@ -31,6 +31,23 @@ print("width magnification", width_magnification2)
 #Compute SSIM between two images
 #(score, diff) = structural_similarity(img1, img2, full=True)
 #print("The structural similarity index measure (SSIM) is:", score)
+
+def differences (pixels, width_o, height_o):
+    for i in range(int(width_o)):
+        for j in range(int(height_o)):
+            # pixels[i,j] = pixels[i,height_o][0]
+            pixels[i,j] = pixels[i,height_o][0]
+            #Get the coordinates of the non-white pixels
+            if (pixels != 255):
+                nonwhite_coords =+ 1
+            #Get the coordinates of the white pixels
+            if (pixels == 255):
+                white_coords =+ 1
+    return nonwhite_coords, white_coords
+
+img1_1 = Image.open("eiffel.jpg", 'r') #Read original image1
+pixels = img1.load()
+#print(differences(pixels, w1, int(428)))
 
 #Display the two images in one figure
 fig1 = plt.figure(figsize=(100, 100))

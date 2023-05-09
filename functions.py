@@ -78,19 +78,22 @@ def ray_tracing(width, height, rayo, n1, so, obj, res, pixels, transfmatrix, wid
             y_objeto = r*res # Conversion to real world coordinates
             if rayo == 0: #principal
                 alpha_entrada = math.atan(y_objeto/so) #This ray enters towards the center of the lens
+                V_entrada = np.array([n1*alpha_entrada,y_objeto])
             elif rayo == 1: #parallel
                 alpha_entrada = 0 #This ray enters parallel to the optical axis
-            elif rayo == 2: #mid ray
-                alpha_entrada = (math.atan(y_objeto/so))/2 #This ray enters towards the center of the lens
-            V_entrada = np.array([n1*alpha_entrada,y_objeto])
-            
+                V_entrada = np.array([n1*alpha_entrada,y_objeto])
+            elif rayo == 2: #mid rays
+                entry_angles = np.linspace(0, math.atan(y_objeto/so), 20)
+                for alpha in entry_angles:
+                    V_entrada = np.array([n1*alpha,y_objeto])
+
             #Output ray vector calculation
             V_salida = transfmatrix.dot(V_entrada)
         
             #Transversal magnification
             y_imagen = V_salida[1]
             if rayo == 0: #principal
-                Mt = (-1)*y_imagen/y_objeto #atan correction
+                Mt = (1)*y_imagen/y_objeto #atan correction
             elif rayo == 1: #parallel
                 Mt = y_imagen/y_objeto
             elif rayo == 2: #mid                                                  #CAMBIAR CUADRAR (REVISAR CON LÍNEA 83)
@@ -113,9 +116,14 @@ def ray_tracing(width, height, rayo, n1, so, obj, res, pixels, transfmatrix, wid
                 pix_fin = ( int(new_gray), int(new_gray), int(new_gray) )        
                 pixels[pos_x_prime, pos_y_prime] = pix_fin
             elif rayo == 2: #mid ray
-                new_gray = (int(pixel) + pixels[pos_x_prime, pos_y_prime][0])/2
-                pix_fin = (int(new_gray), int(new_gray), int(new_gray) )        
-                pixels[pos_x_prime, pos_y_prime] = pix_fin
+                rays_lost = 0
+                try:
+                    new_gray = (int(pixel) + pixels[pos_x_prime, pos_y_prime][0])/2
+                except:
+                    rays_lost += 1
+
+                    pix_fin = ( int(new_gray), int(new_gray), int(new_gray) )        
+                    pixels[pos_x_prime, pos_y_prime] = pix_fin
     return pixels
 
 
