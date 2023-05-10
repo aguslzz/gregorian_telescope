@@ -1,11 +1,9 @@
-#Functions code for a gregorian telescope code in Python
+#Functions code for main of the gregorian telescope
 
 import numpy as np
 import math 
 from PIL import Image
-
 from scipy.interpolate import griddata
-
 from scipy import interpolate
 
 ## Carlos´ functions
@@ -96,7 +94,7 @@ def ray_tracing(width, height, rayo, n1, so, obj, res, pixels, transfmatrix, wid
                 Mt = (1)*y_imagen/y_objeto #atan correction
             elif rayo == 1: #parallel
                 Mt = y_imagen/y_objeto
-            elif rayo == 2: #mid                                                  #CAMBIAR CUADRAR (REVISAR CON LÍNEA 83)
+            elif rayo == 2: #mid rays                                         #CAMBIAR CUADRAR (REVISAR CON LÍNEA 83)
                 Mt = y_imagen/y_objeto
                             
             #Conversion from image coordinates to lens coordinates        
@@ -126,7 +124,6 @@ def ray_tracing(width, height, rayo, n1, so, obj, res, pixels, transfmatrix, wid
                     pixels[pos_x_prime, pos_y_prime] = pix_fin
     return pixels
 
-
 ## My functions
 
 #Matrix formation function
@@ -144,6 +141,7 @@ def optical_matrixes_generator(type, value):
         return np.array([[1, value], [0, 1]])
     else: return np.array([[0, 0], [0, 0]])
 
+#Magnification for each ray in the correspondent pixel
 def get_magnification(width, height, rayo, n1, so, res, transfmatrix):
     # Iterate over each pixel of the image
     for i in range(width):
@@ -180,3 +178,35 @@ def get_magnification(width, height, rayo, n1, so, res, transfmatrix):
             elif rayo == 2: #mid ray
                 Mt = y_imagen/y_objeto
     return Mt
+
+#Angle for each ray in the correspondent pixel
+def get_alpha(width, height, rayo, n1, so, res, transfmatrix):
+    # Iterate over each pixel of the image
+    for i in range(width):
+        for j in range(height):
+            
+            # Get pixel value and calculate its position relative to the center of the image
+            pos_x = i
+            pos_y = j          
+            x = pos_x - width/2
+            y = pos_y - height/2
+            
+            # Calculate the distance from the particular pixel to the center of the object (in pixels)
+            r = math.sqrt( x*x + y*y ) + 1 #Rounding correction
+        
+            #Input ray vector (point in the object plane)
+            y_objeto = r*res # Conversion to real world coordinates
+            if rayo == 0: #principal
+                alpha_entrada = math.atan(y_objeto/so) #This ray enters towards the center of the lens
+            elif rayo == 1: #parallel
+                alpha_entrada = 0 #This ray enters parallel to the optical axis
+            elif rayo == 2: #principal
+                alpha_entrada = (math.atan(y_objeto/so))/2 #This ray enters towards the center of the lens
+            V_entrada = np.array([n1*alpha_entrada,y_objeto]) 
+        
+            #Output ray vector calculation
+            V_salida = transfmatrix.dot(V_entrada)
+        
+            #Transversal magnification
+            alpha = V_salida[0]
+    return alpha
